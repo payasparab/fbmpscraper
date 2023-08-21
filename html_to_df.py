@@ -5,9 +5,34 @@ import re
 
 ### MAIN FUNCTIONS ###
 
-def html_price_outputs(html_path):
-    # Take a locally 
+def html_price_print_outputs(html_path):
+    # Take a localaly 
+    readable = convert_html_path_to_readble(html_path)
+    prices, outliers, og_n = convert_html_to_prices(readable)
+    print('Removed {} ({:.0%}) outliers from {} data points'.format(
+            outliers,
+            outliers/og_n, 
+            og_n
+        )
+    )
+
+    avg, distro = beautify_data(prices)
+    print('The mean price for this FB Marketplace data is ${:.2f}'.format(
+            avg
+        )
+    )
+    print(distro)
+    prices.to_csv('output.csv')
+
+
+def html_price_to_outputs(html_path):
+    '''
+    A function that takes the key information and 
+    outputs it in a predictable format (TBD) to be fed to
+    the chrome extension.
+    '''
     pass
+
 
 ### UTIL FUNCTIONS ###
 
@@ -35,8 +60,8 @@ def convert_html_to_prices(html_str, remove_outliers=True):
     
     Returns tuple: 
         0 : pd.Series(int) : prices 
-        1 : int : original data points
-        2 : 
+        1 : int : outliers removed
+        2 : int : original data points
 
     '''
     # First convert into BS4 obj
@@ -73,9 +98,10 @@ def beautify_data(price_series):
 
     '''
     price_num = np.mean(price_series)
-    distro_25 = price_series.describe().loc['25%']
-    distro_75 = price_series.describe().loc['75%']
-    sample_size = price_series.describe().loc['count']
+    desc_series = price_series.describe()
+    distro_25 = desc_series.loc['25%']
+    distro_75 = desc_series.loc['75%']
+    sample_size = desc_series.loc['count']
 
     price_distro_str = ('The 25th-75th percentile range of prices is' + 
         ' ${:.0f}-${:.0f} based on a sample size of {:.0f}'.format(
@@ -94,4 +120,4 @@ def beautify_data(price_series):
     
 
 if __name__ == "__main__":
-    data = convert_html_path_to_readble('test_data.html')
+    html_price_print_outputs("test_data.html")
