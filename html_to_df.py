@@ -5,6 +5,9 @@ import re
 
 ### MAIN FUNCTIONS ###
 
+def html_price_outputs(html_path):
+    # Take a locally 
+    pass
 
 ### UTIL FUNCTIONS ###
 
@@ -56,8 +59,39 @@ def convert_html_to_prices(html_str, remove_outliers=True):
     return pd.Series(nums), outliers_removed, len(matches)
 
 
-def beautify_data(list_extract):
+def beautify_data(price_series):
+    '''
+    Turning our price series data into intelligible outputs for user simplicity.
+
+    Input: 
+
+        price_series : pd.Series(int) : data of prices
+
+    Output: Tuple
+        0 : price_num : float : the mean price of the price_series
+        1: price_distro_str : str : the string describing the distribution
+
+    '''
+    price_num = np.mean(price_series)
+    distro_25 = price_series.describe().loc['25%']
+    distro_75 = price_series.describe().loc['75%']
+    sample_size = price_series.describe().loc['count']
+
+    price_distro_str = ('The 25th-75th percentile range of prices is' + 
+        ' ${:.0f}-${:.0f} based on a sample size of {:.0f}'.format(
+            distro_25, 
+            distro_75,  
+            sample_size
+        )
+    )
+
+    return price_num, price_distro_str
+
+
+
+
     pass
+    
 
 if __name__ == "__main__":
     data = convert_html_path_to_readble('test_data.html')
