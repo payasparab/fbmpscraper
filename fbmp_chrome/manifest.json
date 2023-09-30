@@ -3,7 +3,7 @@
     "name": "HTML Price Extractor",
     "version": "1.0",
     "description": "Extracts price data from HTML and displays statistics.",
-    "permissions": ["activeTab"],
+    "permissions": ["activeTab", "scripting"],
     "background": {
       "service_worker": "background.js"
     },

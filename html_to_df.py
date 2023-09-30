@@ -2,27 +2,52 @@ import pandas as pd
 import numpy as np
 from bs4 import BeautifulSoup
 import re 
+import os
+import os
+from pathlib import Path
+
 
 ### MAIN FUNCTIONS ###
 
-def html_price_print_outputs(html_path):
-    # Take a localaly 
+def html_price_print_outputs(html_path, downloads_route=True):
+    '''
+    Desc: Take a locally stored HTML file of FB marketplace 
+        with items with prices listed.
+
+    Args:
+        - html_path : str : windows file path
+
+    Returns:
+
+    Results: 
+        - Stores a csv of the price data as 'output.csv' to local path
+
+
+    '''
     readable = convert_html_path_to_readble(html_path)
     prices, outliers, og_n = convert_html_to_prices(readable)
-    print('Removed {} ({:.0%}) outliers from {} data points'.format(
+    str_out = ''
+    str_out += 'Removed {} ({:.0%}) outliers from {} data points'.format(
             outliers,
             outliers/og_n, 
             og_n
-        )
     )
 
     avg, distro = beautify_data(prices)
-    print('The mean price for this FB Marketplace data is ${:.2f}'.format(
-            avg
-        )
+    str_out += '\n The mean price for this FB Marketplace data is ${:.2f} \n {}'.format(
+        avg,
+        distro
     )
-    print(distro)
-    prices.to_csv('output.csv')
+    print(str_out)
+
+    if downloads_route:
+        downloads_path = os.path.join(Path.home(), "Downloads")
+        dump_path = downloads_path + '/output.csv'
+    else:
+        dump_path = os.getcwd() + '/output.csv'
+        
+    prices.to_csv(dump_path)
+    print('File saved to {}.'.format(dump_path))
 
 
 def html_price_to_outputs(html_path):
@@ -52,7 +77,7 @@ def convert_html_to_prices(html_str, remove_outliers=True):
     needs to input information about sample size and also the number of outliers removed
     Spit out dictionary of: 
         #TODO: eventually need to extract other useful data
-        #TODO: assume that is USD for now. Searcg string looks for $ but can be swapped with other currencies
+        #TODO: assume that is USD for now. Search string looks for $ but can be swapped with other currencies
 
     Inputs:
         html_str : str : FB marketplace html converted to string
